@@ -9,10 +9,12 @@ from cisco_gnmi import ClientBuilder
 
 
 class GetState:
-    def __init__(self, target, username, password, verify=True):
+    def __init__(self, target, username, password, rootca_filename=None, verify=True):
         builder = ClientBuilder(target)
-        builder.set_secure_from_target()
+        if rootca_filename:
+            builder.set_secure_from_file(rootca_filename)
         if not verify:
+            builder.set_secure_from_target()
             builder.set_ssl_target_override()
         builder.set_call_authentication(username, password)
         self.client = builder.construct()
@@ -110,6 +112,8 @@ def cli():
                         help="Output format: text, json")
     parser.add_argument('--insecure', action="store_false",
                         help="Accept self-signed certificates")
+    parser.add_argument('--rootca', default=None,
+                        help="Specify rootCA to verify device certificates")
     args = parser.parse_args()
 
     try:
@@ -122,7 +126,8 @@ def cli():
 
     output = {}
     for target in args.targets:
-        gs = GetState(target, username, password, verify=args.insecure)
+        gs = GetState(target, username, password, rootca_filename=args.rootca,
+                      verify=args.insecure)
         output[target] = gs.run()
     
     if args.output == "json":
