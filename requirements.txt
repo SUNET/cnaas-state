@@ -1,6 +1,6 @@
 cffi==1.14.4
 cisco-gnmi==1.0.14
-cryptography==3.3.1
+cryptography==3.3.2
 grpcio==1.34.0
 protobuf==3.14.0
 pycparser==2.20
